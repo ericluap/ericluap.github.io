@@ -21,6 +21,15 @@
   max-width: 300px;
 }
 
+@media screen and (max-width: 600px) {
+  .profile-image {
+    float: none;
+    display: block;
+    margin: 0 auto 20px auto;
+    max-width: 200px;
+  }
+}
+
 .projects-section {
 	margin-top: 80px;
 }
