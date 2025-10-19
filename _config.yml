@@ -21,7 +21,7 @@
 title: Eric Paul
 email: epaul9@illinois.edu
 description: >- # this means to ignore newlines until "baseurl:"
-  Eric Paul is a PhD student at UIUC. His research focuses on interactive theorem proving.
+  Eric is a PhD student at UIUC. His research focuses on interactive theorem proving.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://ericluap.github.io" # the base hostname & protocol or your site, e.g. http://example.com
 twitter_username: 
