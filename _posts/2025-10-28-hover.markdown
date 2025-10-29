@@ -44,7 +44,7 @@ elab "#test " e:term : command => liftTermElabM do
 ```
 Since we have called `elabTerm e none`, we can now hover over `"hi"` and see that its type is a `String`.
 
-Let's make it so that hovering over `"hi"` shows instead what would happen if we were hovering over `5`. [Online editor](https://live.lean-lang.org/#codez=JYWwDg9gTgLgBAGQKYEMB2AoUlZwIoCOGEYSaiq5AogDYoBG+RGSdjARAMQxIDO87OEgBcPKCDjC4AYwggQ6ACZwAvAD44iiBjhwwAV14ALAJJoAZhGQpzcABQA6COYAqScWctwA3jt1C2aBQYaEkVOAd0CDQATxAIQz9dfgAPMKEkuBppGDThcIckcBgYzKQU0hykRRcY0gB+dLRopDKKqHSCOwBWAEo/AF9+3QMoJHt+jG4+ASNgdiA)
+Let's make it so that hovering over `"hi"` shows instead what would happen if we were hovering over `5`. [Online editor](https://live.lean-lang.org/#codez=JYWwDg9gTgLgBAGQKYEMB2AoUlZwIoCOGEYSaiq5AogDYoBG+RGSdjARAMQxIDO87OEgBcPKCDjC4AYwggQ6ACZwAvAD44iiBjhwwAV14ALAJJoAZhGQpzcABQA6COYAqScWctwA3jt1C2aBQYaEkVOAd0CDQATxAIQz9dfgAPMKEkuBppGDThcIckcBgYzKQU0hykRRcY0gB+dLRopDKKqHSCOwBWAEo/AF9+jG4+ASNgdiA)
 ```lean
 import Lean
 import Qq
@@ -58,7 +58,6 @@ elab "#test " e:term : command => do
     expectedType? := none
     expr := q(5)
   })
-  pure ()
 
 #test "hi"
 ```
