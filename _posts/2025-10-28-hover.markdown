@@ -58,6 +58,6 @@ elab "#test " e:term : command => liftTermElabM do
 And when we hover over `"hi"` we now see the following:
 ![Hover now shows information for the number `5`](/assets/images/hover/hover_image_3.png){: .center-image style="width: 35%;"}
 
-What's going on in this code? The program that handles the hover information is specifically getting information from what is called the `InfoTree`. We can add hover information to this tree with the function `addTermInfo'`. Here we said that the syntax `e` has the information for `5`. And thus our hover shows `5 : Nat`!.
+What's going on in this code? The program that handles the hover information is specifically getting information from what is called the `InfoTree`. We can add hover information to this tree with the function `addTermInfo'`. Here we said that the syntax `e` has the information for `5`. And thus our hover shows `5 : Nat`!
 
 In more complicated code, the `InfoTree` is gradually built up as code is given meaning during elaboration. Since this example was simple, we were able to just make the `InfoTree` what we wanted it to be in one go.
