@@ -32,7 +32,7 @@ Here we define a new piece of syntax `#test` that takes in one argument `e` and 
 
 So on the next line `#test "hi"` does nothing. And when you hover over it, nothing is displayed because that code has no meaning. Even though it may look like `"hi"` is a string, it has no hover because we gave this code no meaning.
 
-Now let's give `"hi"` its normal meaning. Lean calls giving some code meaning *elaboration*. So we are going to elaborate `e`. [Online editor](https://live.lean-lang.org/#codez=JYWwDg9gTgLgBAGQKYEMB2AoCYlsavAUQBsUAjOAYQhBHQBM4AVJKEDDJUigIgGIYSAM7wecJAC5BbOBLgBjGnTSMAvAD44xYADMYLNiXIBZOPQgY4WpPAD6cQAmE47gZDi4aCGiQcBw0QAWwDxAA)
+Now let's give `"hi"` its normal meaning. Lean calls the process of giving code meaning *elaboration*. So we are going to elaborate `e`. [Online editor](https://live.lean-lang.org/#codez=JYWwDg9gTgLgBAGQKYEMB2AoCYlsavAUQBsUAjOAYQhBHQBM4AVJKEDDJUigIgGIYSAM7wecJAC5BbOBLgBjGnTSMAvAD44xYADMYLNiXIBZOPQgY4WpPAD6cQAmE47gZDi4aCGiQcBw0QAWwDxAA)
 ```lean
 import Lean
 open Lean Elab Command Term
