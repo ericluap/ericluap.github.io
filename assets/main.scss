@@ -33,3 +33,11 @@
 .projects-section {
 	margin-top: 80px;
 }
+
+.center-image {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 80%; /* or set specific width like 600px */
+  height: auto;
+}
