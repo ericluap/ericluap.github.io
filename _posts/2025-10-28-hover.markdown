@@ -44,26 +44,20 @@ elab "#test " e:term : command => liftTermElabM do
 ```
 Since we have called `elabTerm e none`, we can now hover over `"hi"` and see that its type is a `String`.
 
-Let's make it so that hovering over `"hi"` shows instead what would happen if we were hovering over `5`. [Online editor](https://live.lean-lang.org/#codez=JYWwDg9gTgLgBAGQKYEMB2AoUlZwIoCOGEYSaiq5AogDYoBG+RGSdjARAMQxIDO87OEgBcPKCDjC4AYwggQ6ACZwAvAD44iiBjhwwAV14ALAJJoAZhGQpzcABQA6COYAqScWctwA3jt1C2aBQYaEkVOAd0CDQATxAIQz9dfgAPMKEkuBppGDThcIckcBgYzKQU0hykRRcY0gB+dLRopDKKqHSCOwBWAEo/AF9+jG4+ASNgdiA)
+Let's make it so that hovering over `"hi"` shows instead what would happen if we were hovering over `5`. [Online editor](https://live.lean-lang.org/#codez=JYWwDg9gTgLgBAGQKYEMB2AoUlZwIoCOGEYSaiq5AogDYoBGcAKklCHAMIQgjoAm+IhiR1GAIgDEMJAGd4YuEgBc0tnCVwAxt15oBAXgB8cGsABmMFm1oMAsnD4QMcOCj58rIAJJozEAOSKcAQAFACsAJQYGFKy8gAWwGJAA)
 ```lean
 import Lean
 import Qq
-open Lean Elab Qq
+open Lean Elab Term Command Qq
 
-elab "#test " e:term : command => do
-  pushInfoLeaf (.ofTermInfo {
-    elaborator := .anonymous
-    stx := e
-    lctx := .empty
-    expectedType? := none
-    expr := q(5)
-  })
+elab "#test " e:term : command => liftTermElabM do
+  addTermInfo' e q(5)
 
 #test "hi"
 ```
 And when we hover over `"hi"` we now see the following:
 ![Hover now shows information for the number `5`](/assets/images/hover/hover_image_3.png){: .center-image style="width: 35%;"}
 
-What's going on in this code? The program that handles the hover information is specifically getting information from the `InfoTree`. We can add information to this tree for a piece of syntax using the `pushInfoLeaf` function. Here we call `pushInfoLeaf` and tell it that we're going to give it information about a term using `.ofTermInfo`.
+What's going on in this code? The program that handles the hover information is specifically getting information from what is called the `InfoTree`. We can add hover information to this tree with the function `addTermInfo'`. Here we said that the syntax `e` has the information for `5`. And thus our hover shows `5 : Nat`!.
 
-`.ofTermInfo` wants a lot of information. The two important things are `stx` and `expr`. The field `stx` says what syntax we are talking about and so we pass it `e`. Then `expr` is what that syntax means. We say that here it means `5`. And thus our hover shows `5 : Nat`!
+In more complicated code, the `InfoTree` is gradually built up as code is given meaning during elaboration. Since this example was simple, we were able to just make the `InfoTree` what we wanted it to be in one go.
