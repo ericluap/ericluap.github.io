@@ -1,0 +1,47 @@
+---
+layout: post
+title: "I hate it when my code parses"
+date: 2025-11-21
+categories: lean
+---
+
+Take a look at this Lean code: [Link to code editor](https://live.lean-lang.org/#codez=JYWwDg9gTgLgBAGQKYEMB2AoDUCuaD6ISMKiqaAdCBACbABmAngKJoBuc9ecS7cAvAD4McMugoAFFFADOSKBTDS5UZgA8YvGcAiVqdJgGUSmnny5o4+AYLgBvAL5YaSenE0z4ALn5wARAAWSAA2wRB+QA)
+```lean
+import Lean
+
+run_meta Lean.modifyEnv fun env =>
+  Lean.Parser.parserExtension.modifyState env fun _ => {}
+
+def test := "hello"
+```
+
+Lines 3-4 delete all the parsing rules. And then on line 6, we get a parsing error on the keyword `def`.
+
+Wait what?
+Yep, after line 4 you will always get a parse error as we have deleted all the parsing rules.
+
+Why would we want this?
+While you might not want to do exactly this, the ability to easily modify what Lean is able to parse is what lets people add nice mathematical notation.
+
+## How does this work?
+Lean tracks all the state it cares about during the processing of your file inside of something it calls the environment. Among many other things, the environment stores the parsing rules.
+
+Then we use the `run_meta` command and provide it with some code. Any code provided to `run_meta` will be given access to the current environment. The code we passed in to `run_meta` modifies the current environment by deleting all the information that the parser has.
+
+And that's it!
+
+## Perhaps a more typical usage
+Normally we don't directly interact with the environment but instead use nice higher level tools that do that for us.
+Take a look at this example: [Link to code](https://live.lean-lang.org/#codez=CYUwZgBALiDOUQFwF4IGYIGoID8g)
+```lean
+def test := 3 + ~
+```
+Lean is quite reasonably complaining that `~` is not a token it recognizes. Now let's modify the parsing rules so that it is a token: [Link to code](https://live.lean-lang.org/#codez=M4TwdgLghgHgBAIgH4LgLjhApgJwLYBQBAJlgGaZbAToC8cAzHANRxJA)
+```lean
+syntax "~" : term
+
+def test := 3 + ~
+```
+Ok we're still getting an error. But it's no longer a parsing error! Lean is successfully recognizing that `~` is a valid term. Lean is now complaining that it has no idea what `~` means.
+
+Although `syntax` is a nice high level command, we now know that it eventually becomes a function that takes in the current environment and adds `~` to the environment's list of valid tokens.
