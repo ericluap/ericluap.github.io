@@ -23,7 +23,7 @@ run_meta
 We define a new constant `test` which Lean stores in its hashmap. Then we get the environment (the environment has our hashmap), look up the name `test` inside of the environment hashmap, and print some of the information we get back. Great.
 
 Now here's a strange situation where things don't work:
-```lean4
+```lean
 import Lean
 open Lean
 
@@ -47,7 +47,7 @@ The type `Kernel.Environment` is the final actual environment that Lean produces
 When we convert `env` into `kernelEnv`, it tells Lean to wait for all the asynchronous things to finish so that we can have a `Kernel.Environment` representing all the constants that have been defined so far. Then when we convert `kernelEnv` back into `env`, it just sets all the extra asynchronous tracking stuff to be empty since nothing asynchronous is going on.
 
 So why would this conversion back and forth mean we can't find our defined constant `test` anymore? One might wonder if perhaps our code made Lean forget about all the constants. But the following code does work:
-```lean4
+```lean
 import Lean
 open Lean
 
