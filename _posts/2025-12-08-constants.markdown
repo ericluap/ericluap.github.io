@@ -59,7 +59,7 @@ run_meta
   let info := env.find? ``String |>.get!
   Lean.logInfo m!"{info.type}"
 ```
-Here we just tried to find the information about the definition of `String` and it succeeds. So our messing our with the environment is forgetting `test` but not `String`?
+Here we just tried to find the information about the definition of `String` and it succeeds. So our messing with the environment is forgetting `test` but not `String`?
 ## The staged map
 It turns out that Lean doesn't actually store all the constants we've defined in a single dictionary. It splits things into two dictionaries! The first dictionary stores all the constants defined in stuff that we're importing while the second dictionary stores all the constants we're defining locally. And so `String` is in the first dictionary and `test` is in the second. Somehow our environment conversions are losing everything in the second dictionary of local constants.
 
