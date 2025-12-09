@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "How Lean tracks defined constants"
+title: "How Lean tracks your definitions"
 date: 2025-12-08
 categories: lean
 ---
