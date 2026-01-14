@@ -113,4 +113,5 @@ Lean calls this feature the *leading identifier behavior*.
 - Having **default** leading identifier behavior means that if the next token is an identifier, only parsing functions for identifiers are tried.
 - Having **symbol** leading identifier behavior means that if the next token is an identifier, then parsing functions for the corresponding keyword are not only tried, but also prioritized over any identifier parsing functions.
 - Having **both** leading identifier behavior means that if the next token is an identifier, then parsing functions for the corresponding keyword are tried and are on equal footing with identifier parsing functions.
+
 And any category whose leading identifier behavior is not default, also gets the ampersands automatically inserted for the first word in any of its parsing rules. So the complete and short description of what makes the tactic category different from other categories is that its leading identifier behavior is `both` instead of `default`.
