@@ -1,0 +1,116 @@
+---
+layout: post
+title: "Some names of Lean tactics don't work"
+date: 2026-01-14
+categories: lean
+---
+
+Take a look at this example:
+```lean
+syntax "test~" : tactic
+
+example : True := by
+  test~ -- error here!
+```
+We added a new parsing rule that says the token `"test~"` is a tactic. But we get the error `unknown tactic` underlining `test`. Why did this fail?
+
+If we remove the tilde, then it does work. So we might guess that perhaps we can't have tildes in names of things, but it does work basically everywhere else:
+```lean
+syntax "test~" : command
+
+test~ -- no parsing error here
+```
+(This example adds a new parsing rule that says the token `"test~"` is a command. It then parses the following `"test~"` successfully as a command.)
+
+So for some reason, our tilde is only failing in our tactic example. What's going on?
+
+## Tactics are different
+The names of tactics are indeed being registered differently inside of the parser. Here's another way we can see this difference:
+```lean
+syntax "name" : tactic
+
+def name := 3 -- no parsing error here
+```
+Here we've registered `name` as the name of a tactic and we were also able to make a variable `name` as well.
+
+But if we do this with a term instead of a tactic, it fails:
+```lean
+syntax "name" : term
+
+def name := 3 -- error here!
+```
+We get an error on the definition saying that it expected an identifier but got `name`.
+
+This is in fact the core difference between tactic and other categories that caused our original error: the names of tactics do not become reserved keywords.
+
+## How do reserved keywords work?
+The parser stores a set of reserved keywords. Every time we add a new syntax rule in a normal category, any words used in it become reserved keywords. 
+
+So when we wrote
+```lean
+syntax "test~" : command
+
+test~ -- no parsing error here
+```
+a new reserved keyword `"test~"` was added to the parser.  The parser then looks for the next token it needs to parse. The next token function looks for the longest identifier **or** reserved keyword it can find. The longest identifier is `"test"` because `"~"` is not a valid symbol within an identifier. The longest reserved keyword is `"test~"` and since this is longer than the longest identifier, the next token is `"test~"`. Then because we added a syntax rule that says the token `"test~"` is a command, it is successfully parsed as a command.
+
+But the tactic category is special and does not make the first word used in any of its rules a reserved keyword. Thus, when we wrote
+```lean
+syntax "test~" : tactic
+
+example : True := by
+  test~ -- error here!
+```
+we did **not** add a new reserved keyword. Once again, the parser then looks for the next token it needs to parse by finding the longest identifier or reserved keyword. The longest identifier is again `"test"` since `"~"` cannot be in an identifier. But now there is no longer any reserved keyword applicable and so the next token is `"test"`. Since there is no parsing rule that says `"test"` is a valid tactic, we get an error saying that `"test"` is an unknown tactic.
+
+So to recap, there are characters like `"~"` that can appear in keywords but not identifiers. Since the tactic category does not make the first word of any of its parsing rules a reserved keyword, if the first word contains a character that can't appear in an identifier, it won't be found by the next token parsing function and so will fail to be a valid tactic name.
+
+And that's our answer! 
+
+## Some extra details
+We can actually tell Lean to not reserve a keyword explicitly. For example, in the command category, the following does reserve a keyword:
+```lean
+syntax "test" : command
+
+def test := 3 -- error here!
+```
+and so we get an error in the definition as the token `test` is now a reserved keyword instead of identifier.
+
+If we add an ampersand before the text, it tells Lean to not reserve a keyword:
+```lean
+syntax &"test" : command
+
+def test := 3 -- no error here
+```
+and so we do not get an error as `test` is not a reserved keyword.
+
+The tactic category just automatically adds that ampersand to the first word in the syntax rule for us. But on top of automatically adding the ampersand, the tactic category has another special feature!
+
+Take a look at this example:
+```lean
+syntax &"test" : command
+
+test -- error here!
+```
+We are saying that `"test"` is a command and the ampersand is telling Lean not to make it a reserved keyword. We then get an error on `test` saying `unexpected identifer; expected command`. What went wrong here?
+
+Well when we write the normal line `syntax "test" : command`, it tells Lean that if the next token is the **keyword** `"test"`, then it is a command **and** that `"test"` is now a reserved keyword. When we add an ampersand, it is not longer a reserved keyword, but the parsing rule still only triggers when the next token is the **keyword** `"test"`, not the **identifier** `"test"`.
+
+So when the parser reaches the input `test` in the example, the next token function is called. As before, it tries to find the longest identifier or the longest reserved keyword. The longest identifier is `"test"` and there is no longest reserved keyword due to the ampersand. So the next token is the identifier `"test"` and not the keyword `"test"`. Thus, our parsing rule is never triggered as it expected the keyword `"test"` and we get an error.
+
+But this error doesn't occur in the tactic category! The tactic category automatically adds ampersands to the first word in the parsing rule and so we'd expect the parsing rule to similarly never trigger and so see an error. However, on top of adding ampersands automatically, the tactic category also tells the parser to attempt the parsing rule on identifiers as well as keywords.
+
+Knowing this, let's walk through what happens in this successful example:
+```lean
+syntax "test" : tactic
+
+example : True := by
+  test -- no parsing error here
+```
+When the parser reaches `test`, it calls the next token function. The next token function tries to find the longest identifier or reserved keyword. Since we are in the tactic category, our new parsing rule did not make `"test"` a reserved keyword. Thus, the next token function says that the next token is the identifier `"test"`. Now our added parsing rule only applies to the keyword `"test"`, but since we are in the tactic category, parsing rules that apply to the keyword `"test"` are also attempted for the identifier `"test"`. So our added parsing rule is run and it says that `"test"` is a tactic. So we succeed in parsing.
+
+Lean calls this feature the *leading identifier behavior*.
+- Having **default** leading identifier behavior means that if the next token is an identifier, only parsing functions for identifiers are tried.
+- Having **symbol** leading identifier behavior means that if the next token is an identifier, then parsing functions for the corresponding keyword are not only tried, but also prioritized over any identifier parsing functions.
+- Having **both** leading identifier behavior means that if the next token is an identifier, then parsing functions for the corresponding keyword are tried and are on equal footing with identifier parsing functions.
+And any category whose leading identifier behavior is not default, also gets the ampersands automatically inserted for the first word in any of its parsing rules. So the complete and short description of what makes the tactic category different from other categories is that its leading identifier behavior is `both` instead of `default`.
