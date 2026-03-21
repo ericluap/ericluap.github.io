@@ -94,7 +94,7 @@ test -- error here!
 ```
 We are saying that `"test"` is a command and the ampersand is telling Lean not to make it a reserved keyword. We then get an error on `test` saying `unexpected identifer; expected command`. What went wrong here?
 
-Well when we write the normal line `syntax "test" : command`, it tells Lean that if the next token is the **keyword** `"test"`, then it is a command **and** that `"test"` is now a reserved keyword. When we add an ampersand, it is not longer a reserved keyword, but the parsing rule still only triggers when the next token is the **keyword** `"test"`, not the **identifier** `"test"`.
+Well when we write the normal line `syntax "test" : command`, it tells Lean that if the next token is the **keyword** `"test"`, then it is a command **and** that `"test"` is now a reserved keyword. When we add an ampersand, it is no longer a reserved keyword, but the parsing rule still only triggers when the next token is the **keyword** `"test"`, not the **identifier** `"test"`.
 
 So when the parser reaches the input `test` in the example, the next token function is called. As before, it tries to find the longest identifier or the longest reserved keyword. The longest identifier is `"test"` and there is no longest reserved keyword due to the ampersand. So the next token is the identifier `"test"` and not the keyword `"test"`. Thus, our parsing rule is never triggered as it expected the keyword `"test"` and we get an error.
 
