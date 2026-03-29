@@ -76,7 +76,7 @@ Now let's say we are given a random function `f` from a type `Y` to a collection
 
 ![Image showing function from circle with points labelled "Y" to another circle with points labelled "Types"](/assets/images/fibration/fibration_randIndex.png)
 
-We can imagine that this function `f : Y → Type` is encoding a fibration. We do this by treating Y as the type of names and the type each name maps to is the entire fiber with that name.
+We can imagine that this function `f : Y → Type` is encoding a fibration. We do this by treating Y as the type of names of each fiber. And then what `f` maps each name to we will treat as being the entire fiber associated with that name.
 
 ![Image highlighting the points in the image of the function from Y to Types](/assets/images/fibration/fibration_indexedEnc_randIndex.png)
 
