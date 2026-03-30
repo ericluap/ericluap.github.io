@@ -17,7 +17,7 @@ This is a fibration. We call each imagined grouping a fiber. So this fibration o
 
 We can have other fibrations of X:
 
-  <div style="display:flex; gap:10px">
+  <div style="display:flex; gap:10px; flex-wrap: wrap">
   <img src="/assets/images/fibration/fibration_sideFib1_typeX.png" width=300 height=300>
   <img src="/assets/images/fibration/fibration_sideFib2_typeX.png" width=300 height=300>
   </div>
